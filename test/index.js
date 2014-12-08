@@ -19,9 +19,8 @@ function makeTestServer() {
     this.body = {hurp: 'durp'}
   });
   app.post('/hurp', function* () {
-    console.log('this.request.body is', this.request.body);
+    this.set('x-some-dumb-header', 'Im-set-yo');
     this.body = this.request.body;
-    this.set('X-Some-Dumb-Header', 'Im-set-yo');
   });
   return http.createServer(app.callback())
 }
@@ -52,14 +51,13 @@ describe('pixie-proxy', function() {
   });
 
   it('proxies POST requests', function(done) {
-    console.log('did i get here');
     var testServer = makeTestServer();
     var PORT = getRandomPort();
     testServer.listen(PORT, function() {
 
       var app = koa();
-      app.use(router(app));
       app.use(body());
+      app.use(router(app));
 
       var proxy = pixie({host: 'http://localhost:' + PORT});
       var postBody = {bestHobbit: 'Yolo Swaggins'};
@@ -72,8 +70,7 @@ describe('pixie-proxy', function() {
         .end(function(err, res) {
           assert.ifError(err);
           assert.deepEqual(res.body, postBody);
-          console.log('res.headers is', res.headers)
-          assert.equal(res.headers['X-Some-Dumb-Header'], 'Im-set-yo');
+          assert.equal(res.headers['x-some-dumb-header'], 'Im-set-yo');
           testServer.close();
           done();
         });

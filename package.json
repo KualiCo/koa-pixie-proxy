@@ -4,19 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --harmony test/*"
+    "test": "mocha --harmony -R dot test/*"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "co-request": "0.2.0",
-    "koa-router": "3.7.0",
+    "debug": "2.1.0",
     "path-to-regexp": "1.0.1"
   },
   "devDependencies": {
     "co": "4.0.1",
     "koa": "0.13.0",
     "koa-body": "0.4.0",
+    "koa-router": "3.7.0",
     "mocha": "2.0.1",
     "supertest": "0.15.0"
   }
