@@ -1,13 +1,14 @@
 {
-  "name": "pixie-proxy",
+  "name": "koa-pixie-proxy",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "mocha --harmony -R dot test/*"
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": ["koa", "proxy"],
+  "author": "Jamison Dance <jergason@gmail.com> (http://jamisondance.com)",
+  "license": "MIT",
   "dependencies": {
     "co-request": "0.2.0",
     "debug": "2.1.0",
