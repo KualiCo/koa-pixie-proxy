@@ -43,6 +43,7 @@ function pixie(options) {
       Object.keys(response.headers).forEach(function(h) {
         self.set(h, response.headers[h]);
       });
+      this.status = response.statusCode;
       this.body = response.body;
 
       yield next;

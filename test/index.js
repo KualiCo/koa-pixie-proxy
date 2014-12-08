@@ -18,6 +18,9 @@ function makeTestServer() {
   app.get('/hurp', function* (){
     this.body = {hurp: 'durp'}
   });
+  app.get('/i500', function* (){
+    this.status = 500;
+  });
   app.post('/hurp', function* () {
     this.set('x-some-dumb-header', 'Im-set-yo');
     this.body = this.request.body;
@@ -26,6 +29,30 @@ function makeTestServer() {
 }
 
 describe('pixie-proxy', function() {
+  it('sets the status correctly', function(done) {
+    // test server to hit with our requests
+    var testServer = makeTestServer();
+    var PORT = getRandomPort();
+    testServer.listen(PORT, function() {
+
+      var app = koa();
+      app.use(router(app));
+
+      var proxy = pixie({host: 'http://localhost:' + PORT});
+
+      // we proxy to a non-existent endpoint so we should 404
+      app.get('/foo', proxy('/i500'));
+      supertest(http.createServer(app.callback()))
+        .get('/foo')
+        .expect(500)
+        .end(function(err, res) {
+          assert.ifError(err);
+          testServer.close();
+          done();
+        });
+    });
+  });
+
   it('proxies GET requests', function(done) {
     // test server to hit with our requests
     var testServer = makeTestServer();
