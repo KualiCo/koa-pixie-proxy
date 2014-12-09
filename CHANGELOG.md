@@ -1,3 +1,9 @@
+v1.0.2 - Tue, 09 Dec 2014 18:49:26 GMT
+--------------------------------------
+
+- [fd68373](../../commit/fd68373) [fixed] proxy to host + this.url when no proxy url set
+
+
 v1.0.1 - Mon, 08 Dec 2014 19:33:18 GMT
 --------------------------------------
 
