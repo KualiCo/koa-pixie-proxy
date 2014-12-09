@@ -77,6 +77,31 @@ describe('pixie-proxy', function() {
     });
   });
 
+  it('proxies the whole url when called with no arguments', function(done) {
+    var testServer = makeTestServer();
+    var PORT = getRandomPort();
+    testServer.listen(PORT, function() {
+
+      var app = koa();
+      app.use(body());
+      app.use(router(app));
+
+      var proxy = pixie({host: 'http://localhost:' + PORT});
+      var postBody = {bestHobbit: 'Yolo Swaggins'};
+
+      app.post('/hurp', proxy());
+      supertest(http.createServer(app.callback()))
+        .post('/hurp')
+        .send(postBody)
+        .expect(200)
+        .end(function(err, res) {
+          assert.ifError(err);
+          testServer.close();
+          done();
+        });
+    });
+  });
+
   it('proxies POST requests', function(done) {
     var testServer = makeTestServer();
     var PORT = getRandomPort();

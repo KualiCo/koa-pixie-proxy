@@ -1,6 +1,6 @@
 var request = require('co-request');
 var replacePathParams = require('./lib/replace');
-var debug = require('debug')('pixie-proxy');
+var debug = require('debug')('koa-pixie-proxy');
 
 var hasColons = /:/;
 
@@ -12,7 +12,7 @@ function pixie(options) {
       var self = this;
 
       var requestOpts = {
-        url: options.host + path || this.url,
+        url: options.host + (path || this.url),
         method: this.method,
         headers: this.headers
       };
@@ -34,10 +34,9 @@ function pixie(options) {
         requestOpts.body = this.request.body;
       }
 
-      debug(requestOpts);
+      debug('proxying request with options', requestOpts);
 
       var response = yield request(requestOpts);
-      debug(response);
 
       // Proxy over response headers
       Object.keys(response.headers).forEach(function(h) {
