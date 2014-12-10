@@ -19,7 +19,7 @@ function pixie(options) {
 
       // if we have dynamic segments in the url
       if (shouldReplacePathParams) {
-        requestOpts.url = option.host + replacePathParams(path, this.params);
+        requestOpts.url = options.host + replacePathParams(path, this.params);
       }
 
       // something possibly went wrong if they have no body but are sending a
