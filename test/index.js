@@ -16,11 +16,15 @@ function makeTestServer() {
   app.use(body());
   app.use(router(app));
 
-  app.get('/hurp', function* (){
+  app.get('/query', function* () {
+    this.body = this.query;
+  });
+
+  app.get('/hurp', function* () {
     this.body = {hurp: 'durp'}
   });
 
-  app.get('/i500', function* (){
+  app.get('/i500', function* () {
     this.status = 500;
   });
 
@@ -130,6 +134,31 @@ describe('pixie-proxy', function() {
           assert.ifError(err);
           assert.deepEqual(res.body, postBody);
           assert.equal(res.headers['x-some-dumb-header'], 'Im-set-yo');
+          testServer.close();
+          done();
+        });
+    });
+  });
+
+  it('proxies the query string', function(done) {
+    var testServer = makeTestServer();
+    var PORT = getRandomPort();
+    testServer.listen(PORT, function() {
+
+      var app = koa();
+      app.use(body());
+      app.use(router(app));
+
+      var proxy = pixie({host: 'http://localhost:' + PORT});
+
+      app.get('/query', proxy('/query'));
+      supertest(http.createServer(app.callback()))
+        .get('/query')
+        .query({foo: 'bar'})
+        .expect(200)
+        .end(function(err, res) {
+          assert.ifError(err);
+          assert.deepEqual(res.body, {foo: 'bar'});
           testServer.close();
           done();
         });
