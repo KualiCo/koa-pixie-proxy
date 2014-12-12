@@ -14,7 +14,8 @@ function pixie(options) {
       var requestOpts = {
         url: options.host + (path || this.url),
         method: this.method,
-        headers: this.headers
+        headers: this.headers,
+        qs: this.query
       };
 
       // if we have dynamic segments in the url
