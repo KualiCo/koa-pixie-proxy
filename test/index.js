@@ -3,8 +3,10 @@ var koa = require('koa');
 var supertest = require('supertest');
 var assert = require('assert');
 var http = require('http');
+var serve = require('koa-static');
 var router = require('koa-router');
 var body = require('koa-body');
+
 
 function getRandomPort() {
   return Math.ceil(Math.random() * 5000 + 5000);
@@ -15,6 +17,8 @@ function makeTestServer() {
 
   app.use(body());
   app.use(router(app));
+  // for static file and content-type testing
+  app.use(serve(__dirname));
 
   app.get('/query', function* () {
     this.body = this.query;
@@ -28,7 +32,7 @@ function makeTestServer() {
     this.status = 500;
   });
 
-  app.get('/haveparams/:foo', function*() {
+  app.get('/haveparams/:foo', function* () {
     this.body = {foo: this.params.foo};
   });
 
@@ -163,6 +167,32 @@ describe('pixie-proxy', function() {
           done();
         });
     });
+  });
+
+  it('proxies non-json content-types', function(done) {
+    var testServer = makeTestServer();
+    var PORT = getRandomPort();
+    testServer.listen(PORT, function() {
+
+      var app = koa();
+      app.use(body());
+      app.use(router(app));
+
+      var proxy = pixie({host: 'http://localhost:' + PORT});
+
+      app.get('/static/mystery.gif', proxy());
+      supertest(http.createServer(app.callback()))
+        .get('/static/mystery.gif')
+        .expect(200)
+        //.expect('Content-Type', 'image/jpeg')
+        .end(function(err, res) {
+          //console.log('res is',res);
+          assert.ifError(err);
+          testServer.close();
+          done();
+        });
+    });
+
   });
 
   it('replaces path params with their this.params', function(done) {

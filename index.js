@@ -25,14 +25,19 @@ function pixie(options) {
 
       // something possibly went wrong if they have no body but are sending a
       // put or a post
-      if ((requestOpts.method == 'POST' || requestOpts.method == 'PUT') && !this.request.body) {
-        console.warn('sending PUT or POST but no request body found');
-      }
+      if ((requestOpts.method == 'POST' || requestOpts.method == 'PUT')) {
 
-      // LOL WE JSON NOW
-      if (this.request.body) {
-        requestOpts.json = true;
-        requestOpts.body = this.request.body;
+        if (!this.request.body) {
+          console.warn('sending PUT or POST but no request body found');
+        } else {
+          requestOpts.body = this.request.body;
+        }
+
+        // make request allow js objects if we are sending json
+        if (this.request.type == 'application/json') {
+          requestOpts.json = true;
+        }
+
       }
 
       debug('proxying request with options', requestOpts);
