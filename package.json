@@ -11,6 +11,10 @@
     "proxy"
   ],
   "author": "Jamison Dance <jergason@gmail.com> (http://jamisondance.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KualiCo/koa-pixie-proxy"
+  },
   "license": "MIT",
   "dependencies": {
     "co-request": "0.2.0",
