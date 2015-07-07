@@ -1,3 +1,9 @@
+v1.0.7 - Tue, 07 Jul 2015 15:28:13 GMT
+--------------------------------------
+
+- [3547da5](../../commit/3547da5) [fixed] fix a bug where binary files were not being properly encoded when proxied
+
+
 v1.0.6 - Fri, 03 Jul 2015 16:39:40 GMT
 --------------------------------------
 
