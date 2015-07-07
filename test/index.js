@@ -3,10 +3,10 @@ var koa = require('koa');
 var supertest = require('supertest');
 var assert = require('assert');
 var http = require('http');
+var fs = require('fs');
 var serve = require('koa-static');
 var router = require('koa-router');
 var body = require('koa-body');
-
 
 function getRandomPort() {
   return Math.ceil(Math.random() * 5000 + 5000);
@@ -40,6 +40,7 @@ function makeTestServer() {
     this.set('x-some-dumb-header', 'Im-set-yo');
     this.body = this.request.body;
   });
+
   return http.createServer(app.callback())
 }
 
@@ -215,6 +216,33 @@ describe('pixie-proxy', function() {
           assert.deepEqual(res.body, {foo: 'bar'});
           testServer.close();
           done();
+        });
+    });
+  });
+
+  it('proxies request binary data(image, compressed file, etc.)', function(done){
+    var testServer = makeTestServer();
+    var PORT = getRandomPort();
+    testServer.listen(PORT, function() {
+
+      var app = koa();
+      app.use(body());
+      app.use(router(app));
+
+      var proxy = pixie({host: 'http://localhost:' + PORT});
+
+      app.get('/static/mystery.gif', proxy('', null));
+      supertest(http.createServer(app.callback()))
+        .get('/static/mystery.gif')
+        .expect(200)
+        .expect('Content-Type', 'image/gif')
+        .end(function(err, res){
+          assert.ifError(err);
+          fs.readFile(__dirname + '/static/mystery.gif', 'binary', function(err, data){
+            assert.equal(res.header['content-length'], data.length);
+            testServer.close();
+            done();
+          });
         });
     });
   });

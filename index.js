@@ -5,7 +5,7 @@ var debug = require('debug')('koa-pixie-proxy');
 var hasColons = /:/;
 
 function pixie(options) {
-  return function proxy(path) {
+  return function proxy(path, encoding) {
     var shouldReplacePathParams = hasColons.test(path);
 
     return function* (next) {
@@ -15,7 +15,8 @@ function pixie(options) {
         url: options.host + (path || this.url),
         method: this.method,
         headers: this.headers,
-        qs: this.query
+        qs: this.query,
+        encoding: encoding
       };
 
       // if we have dynamic segments in the url
