@@ -5,6 +5,7 @@ var debug = require('debug')('koa-pixie-proxy');
 var hasColons = /:/;
 
 function pixie(options) {
+  options.hostHeader = options.hostHeader || options.host.replace(/^https?:\/\//, '')
   return function proxy(path, encoding) {
     var shouldReplacePathParams = hasColons.test(path);
 
@@ -18,6 +19,11 @@ function pixie(options) {
         qs: this.query,
         encoding: encoding
       };
+
+      // a request's 'host' header should match the
+      // server's dns name -- this is particularly
+      // important for https destinations
+      requestOpts.headers.host = options.hostHeader
 
       // if we have dynamic segments in the url
       if (shouldReplacePathParams) {
