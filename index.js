@@ -15,6 +15,9 @@ function pixie(options) {
       
       var requestHeaders = {};
       Object.keys(self.headers).forEach(function(h) {
+        // a request's 'host' header should match the
+        // server's dns name -- this is particularly
+        // important for https destinations
         if (h === 'host') requestHeaders[h] = options.hostHeader;
         else requestHeaders[h] = self.headers[h];
       });
@@ -26,11 +29,6 @@ function pixie(options) {
         qs: this.query,
         encoding: encoding
       };
-
-      // a request's 'host' header should match the
-      // server's dns name -- this is particularly
-      // important for https destinations
-      requestOpts.headers.host = options.hostHeader
 
       // if we have dynamic segments in the url
       if (shouldReplacePathParams) {
