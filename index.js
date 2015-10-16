@@ -5,16 +5,27 @@ var debug = require('debug')('koa-pixie-proxy');
 var hasColons = /:/;
 
 function pixie(options) {
+  options.hostHeader = options.hostHeader || options.host.replace(/^https?:\/\//, '');
+  
   return function proxy(path, encoding) {
     var shouldReplacePathParams = hasColons.test(path);
 
     return function* (next) {
       var self = this;
+      
+      var requestHeaders = {};
+      Object.keys(self.headers).forEach(function(h) {
+        // a request's 'host' header should match the
+        // server's dns name -- this is particularly
+        // important for https destinations
+        if (h === 'host') requestHeaders[h] = options.hostHeader;
+        else requestHeaders[h] = self.headers[h];
+      });
 
       var requestOpts = {
         url: options.host + (path || this.url),
         method: this.method,
-        headers: this.headers,
+        headers: requestHeaders,
         qs: this.query,
         encoding: encoding
       };
