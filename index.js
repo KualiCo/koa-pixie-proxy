@@ -11,13 +11,13 @@ function pixie(options) {
     return function* (next) {
       var self = this;
 
-      var requestOpts = {
+      var requestOpts = Object.assign( { }, options.request || { }, {
         url: options.host + (path || this.url),
         method: this.method,
         headers: this.headers,
         qs: this.query,
         encoding: encoding
-      };
+      } );
 
       // if we have dynamic segments in the url
       if (shouldReplacePathParams) {
